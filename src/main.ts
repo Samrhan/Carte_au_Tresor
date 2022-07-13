@@ -8,6 +8,9 @@ async function main() {
     const outFileName = process.argv.find(arg => arg.startsWith('--output='))?.split('=')[1];
     const verbose = process.argv.find(arg => arg.startsWith('--verbose'));
 
+    // chhh this is secret
+    const hardcoreMode = process.argv.find(arg => arg.startsWith('--hardcore'));
+
     if (!fileName) {
         throw new Error('No file specified');
     }
@@ -18,6 +21,9 @@ async function main() {
     }
     if (outFileName) {
         app.setOutFileName(outFileName)
+    }
+    if(hardcoreMode) {
+        app.setHardcoreMode()
     }
 
     await app.execute();

@@ -6,6 +6,7 @@ export class AppService {
     outFileName: string | undefined;
 
     verbose = false;
+    hardcoreMode = false;
 
     constructor(fileName: string) {
         this.file = fileName;
@@ -16,7 +17,7 @@ export class AppService {
      */
     async execute() {
         const map = MapFactory.createMap(fs.readFileSync(this.file, 'utf8'));
-        map.computeMovements(this.verbose);
+        map.computeMovements(this.verbose, this.hardcoreMode);
         const serialized = map.serialize();
         if(!this.outFileName) {
             this.outFileName = this.file.split('.')[0] + '-result.txt';
@@ -30,5 +31,9 @@ export class AppService {
 
     setOutFileName(outFileName: string) {
         this.outFileName = outFileName;
+    }
+
+    setHardcoreMode() {
+        this.hardcoreMode = true;
     }
 }

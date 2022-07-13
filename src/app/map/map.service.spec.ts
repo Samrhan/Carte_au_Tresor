@@ -126,9 +126,9 @@ describe('MapService', function () {
             treasure: 0
         };
         service.addAdventurer(adventurer);
-        jest.spyOn((service as any), "computeNewCoordinates");
+        jest.spyOn((MapService as any), "computeNewCoordinates");
         service.computeMovements();
-        expect((service as any).computeNewCoordinates).not.toHaveBeenCalled();
+        expect((MapService as any).computeNewCoordinates).not.toHaveBeenCalled();
     })
 
     it("should call computeNewCoordinates if the movement is ADVANCE", () => {
@@ -143,9 +143,9 @@ describe('MapService', function () {
         };
         service.addAdventurer(adventurer);
         service.buildGrid();
-        jest.spyOn((service as any), "computeNewCoordinates");
+        jest.spyOn((MapService as any), "computeNewCoordinates");
         service.computeMovements();
-        expect((service as any).computeNewCoordinates).toHaveBeenCalledWith({x: 1, y: 1}, adventurer.orientation);
+        expect((MapService as any).computeNewCoordinates).toHaveBeenCalledWith({x: 1, y: 1}, adventurer.orientation);
     })
 
     it("should call computeNewOrientation if the movement is TURN_RIGHT or TURN_LEFT", () => {
@@ -280,27 +280,46 @@ describe('MapService', function () {
     })
 
     it('should compute the right coordinates', () => {
-        let newCoordinate = (service as any).computeNewCoordinates({x: 1, y: 1}, Orientation.EAST);
+        let newCoordinate = (MapService as any).computeNewCoordinates({x: 1, y: 1}, Orientation.EAST);
         expect(newCoordinate).toEqual({x: 2, y: 1});
-        newCoordinate = (service as any).computeNewCoordinates({x: 1, y: 1}, Orientation.SOUTH);
+        newCoordinate = (MapService as any).computeNewCoordinates({x: 1, y: 1}, Orientation.SOUTH);
         expect(newCoordinate).toEqual({x: 1, y: 2});
-        newCoordinate = (service as any).computeNewCoordinates({x: 1, y: 1}, Orientation.WEST);
+        newCoordinate = (MapService as any).computeNewCoordinates({x: 1, y: 1}, Orientation.WEST);
         expect(newCoordinate).toEqual({x: 0, y: 1});
-        newCoordinate = (service as any).computeNewCoordinates({x: 1, y: 1}, Orientation.NORTH);
+        newCoordinate = (MapService as any).computeNewCoordinates({x: 1, y: 1}, Orientation.NORTH);
         expect(newCoordinate).toEqual({x: 1, y: 0});
     })
 
-    it("should compute the right coordinate on borders", ()=>{
+    it("should not move the adventurer if he try to cross the border", () => {
         const dimension = {width: 10, height: 10};
         service.setSize(dimension);
-        let newCoordinate = (service as any).computeNewCoordinates({x: 0, y: 0}, Orientation.NORTH);
-        expect(newCoordinate).toEqual({x: 0, y: 9});
-        newCoordinate = (service as any).computeNewCoordinates({x: 0, y: 9}, Orientation.SOUTH);
-        expect(newCoordinate).toEqual({x: 0, y: 0});
-        newCoordinate = (service as any).computeNewCoordinates({x: 0, y: 0}, Orientation.WEST);
-        expect(newCoordinate).toEqual({x: 9, y: 0});
-        newCoordinate = (service as any).computeNewCoordinates({x: 9, y: 0}, Orientation.EAST);
-        expect(newCoordinate).toEqual({x: 0, y: 0});
+        const adventurer = {
+            coordinates: {x: 9, y: 9},
+            name: 'adventurer',
+            orientation: Orientation.SOUTH,
+            movements: [Movement.ADVANCE],
+            treasure: 0
+        };
+        service.addAdventurer(adventurer);
+        service.buildGrid();
+        service.computeMovements();
+        expect(service.adventurers[0].coordinates).toEqual({x: 9, y: 9});
+    })
+
+    it("should kill the adventurer if he try to cross a border while hardcore mode is activated", () => {
+        const dimension = {width: 10, height: 10};
+        service.setSize(dimension);
+        const adventurer = {
+            coordinates: {x: 9, y: 9},
+            name: 'adventurer',
+            orientation: Orientation.SOUTH,
+            movements: [Movement.ADVANCE],
+            treasure: 0
+        };
+        service.addAdventurer(adventurer);
+        service.buildGrid();
+        service.computeMovements(false, true);
+        expect(service.adventurers.length).toEqual(0);
     })
 
     it('should compute the right orientation', () => {

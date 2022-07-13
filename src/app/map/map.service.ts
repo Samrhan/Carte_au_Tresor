@@ -54,6 +54,7 @@ export class MapService {
         }
 
         for (const treasure of this.treasures) {
+            // We add one to the value because the value 1 is reserved for the adventurer.
             this.grid[treasure.coordinates.y][treasure.coordinates.x] = treasure.amount + 1;
         }
 
@@ -94,15 +95,16 @@ export class MapService {
     /**
      * Compute the movement of the adventurer
      * @param verbose: if true, the movement and the grid will be displayed in the console for each adventurer and step
+     * @param hardcoreMode: if true, the adventurer will not be able to go out of the map and will die if he tries to.
      */
-    computeMovements(verbose: boolean = false) {
+    computeMovements(verbose: boolean = false, hardcoreMode: boolean = false) {
         // Getting the max possible movements for each adventurer
         const maxMovements = Math.max(...this.adventurers.map((a) => a.movements.length));
 
         for (let i = 0; i < maxMovements; i++) {
             for (const adventurer of this.adventurers) {
                 const movement = adventurer.movements[i];
-                if(!movement){
+                if (!movement) {
                     // Could happen if there's one adventurer with less movements than the others.
                     break;
                 }
@@ -115,9 +117,27 @@ export class MapService {
                     break;
                 }
 
-                const newCoordinates = this.computeNewCoordinates(adventurer.coordinates, adventurer.orientation);
+                const newCoordinates = MapService.computeNewCoordinates(adventurer.coordinates, adventurer.orientation);
+
+                if (newCoordinates.x < 0 || newCoordinates.x >= this.width || newCoordinates.y < 0 || newCoordinates.y >= this.height) {
+                    // Check if we are out of the map
+                    if (hardcoreMode) {
+                        if (verbose) {
+                            console.log(`${adventurer.name} crossed the border and was killed by a wild animal, and all the recovered treasures were lost.`);
+                        }
+                        this.adventurers = this.adventurers.filter((a) => a.name !== adventurer.name);
+                    }
+                    else if (verbose) {
+                        console.log(`${adventurer.name} tried to cross the border but, overcome with fear, turned back.`);
+                    }
+                    break;
+                }
+
                 if (this.grid[newCoordinates.y][newCoordinates.x] === 0) {
                     adventurer.coordinates = newCoordinates;
+                    if (verbose) {
+                        console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y}`);
+                    }
                 } else if (this.grid[newCoordinates.y][newCoordinates.x] > 1 && !(newCoordinates.x === adventurer.coordinates.x && newCoordinates.y === adventurer.coordinates.y)) {
                     //Check if we found a treasure, and if we actually moved to this position
                     adventurer.coordinates = newCoordinates;
@@ -130,14 +150,20 @@ export class MapService {
                             this.treasures.splice(treasureIndex, 1);
                         }
                     }
+                    if (verbose) {
+                        console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y} and found a treasure!`);
+                    }
+                } else {
+                    if (verbose) {
+                        console.log(`${adventurer.name} couldn't move this time, there was ${this.grid[newCoordinates.y][newCoordinates.x] === -1 ? 'a mountain' : 'an adventurer'} blocking the way`);
+                    }
+                    break;
                 }
-
                 this.buildGrid();
-
-                if (verbose) {
-                    console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y}`);
+                if(verbose) {
                     this.displayGrid()
                 }
+
             }
         }
     }
@@ -149,42 +175,19 @@ export class MapService {
      * @returns {Coordinate}
      * @private
      */
-    private computeNewCoordinates(coordinates: Coordinate, orientation: Orientation): Coordinate {
-        let coordinatesToReturn: Coordinate;
+    private static computeNewCoordinates(coordinates: Coordinate, orientation: Orientation): Coordinate {
         switch (orientation) {
             case Orientation.NORTH:
-                coordinatesToReturn = {x: coordinates.x, y: coordinates.y - 1};
-                break;
+                return {x: coordinates.x, y: coordinates.y - 1};
             case Orientation.EAST:
-                coordinatesToReturn = {x: coordinates.x + 1, y: coordinates.y};
-                break;
+                return {x: coordinates.x + 1, y: coordinates.y};
             case Orientation.SOUTH:
-                coordinatesToReturn = {x: coordinates.x, y: coordinates.y + 1};
-                break;
+                return {x: coordinates.x, y: coordinates.y + 1};
             case Orientation.WEST:
-                coordinatesToReturn = {x: coordinates.x - 1, y: coordinates.y};
-                break;
+                return {x: coordinates.x - 1, y: coordinates.y};
             default:
                 throw new Error('Unknown orientation');
         }
-        // We check if the new coordinates are in the grid.
-        if (coordinatesToReturn.x < 0 || coordinatesToReturn.x >= this.width || coordinatesToReturn.y < 0 || coordinatesToReturn.y >= this.height) {
-            // If the new coordinates are out of the grid, we place them on the opposite side of the grid.
-            if (coordinatesToReturn.x < 0) {
-                coordinatesToReturn.x = this.width - 1;
-            }
-            if (coordinatesToReturn.x >= this.width) {
-                coordinatesToReturn.x = 0;
-            }
-            if (coordinatesToReturn.y < 0) {
-                coordinatesToReturn.y = this.height - 1;
-            }
-            if (coordinatesToReturn.y >= this.height) {
-                coordinatesToReturn.y = 0;
-            }
-        }
-
-        return coordinatesToReturn;
     }
 
     /**
@@ -209,6 +212,7 @@ export class MapService {
                     default:
                         throw new Error('Unknown orientation');
                 }
+
             case Movement.TURN_LEFT:
                 switch (orientation) {
                     case Orientation.NORTH:
@@ -223,6 +227,7 @@ export class MapService {
                         throw new Error('Unknown orientation');
                 }
             case Movement.ADVANCE:
+                // We should never be here, because we should have already checked the orientation.
                 return orientation;
         }
     }
