@@ -290,6 +290,19 @@ describe('MapService', function () {
         expect(newCoordinate).toEqual({x: 1, y: 0});
     })
 
+    it("should compute the right coordinate on borders", ()=>{
+        const dimension = {width: 10, height: 10};
+        service.setSize(dimension);
+        let newCoordinate = (service as any).computeNewCoordinates({x: 0, y: 0}, Orientation.NORTH);
+        expect(newCoordinate).toEqual({x: 0, y: 9});
+        newCoordinate = (service as any).computeNewCoordinates({x: 0, y: 9}, Orientation.SOUTH);
+        expect(newCoordinate).toEqual({x: 0, y: 0});
+        newCoordinate = (service as any).computeNewCoordinates({x: 0, y: 0}, Orientation.WEST);
+        expect(newCoordinate).toEqual({x: 9, y: 0});
+        newCoordinate = (service as any).computeNewCoordinates({x: 9, y: 0}, Orientation.EAST);
+        expect(newCoordinate).toEqual({x: 0, y: 0});
+    })
+
     it('should compute the right orientation', () => {
         let newOrientation = (MapService as any).computeNewOrientation(Orientation.EAST, Movement.TURN_RIGHT);
         expect(newOrientation).toBe(Orientation.SOUTH);
