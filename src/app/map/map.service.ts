@@ -96,24 +96,33 @@ export class MapService {
      * @param verbose: if true, the movement and the grid will be displayed in the console for each adventurer and step
      */
     computeMovements(verbose: boolean = false) {
+        // Getting the max possible movements for each adventurer
         const maxMovements = Math.max(...this.adventurers.map((a) => a.movements.length));
 
         for (let i = 0; i < maxMovements; i++) {
             for (const adventurer of this.adventurers) {
                 const movement = adventurer.movements[i];
+                if(!movement){
+                    // Could happen if there's one adventurer with less movements than the others.
+                    break;
+                }
                 if (movement === Movement.TURN_RIGHT || movement === Movement.TURN_LEFT) {
                     adventurer.orientation = MapService.computeNewOrientation(adventurer.orientation, movement);
-                    if(verbose) {
+
+                    if (verbose) {
                         console.log(`${adventurer.name} turns ${movement === Movement.TURN_RIGHT ? 'right' : 'left'} and is now facing ${adventurer.orientation}`);
                     }
                     break;
                 }
+
                 const newCoordinates = this.computeNewCoordinates(adventurer.coordinates, adventurer.orientation);
                 if (this.grid[newCoordinates.y][newCoordinates.x] === 0) {
                     adventurer.coordinates = newCoordinates;
                 } else if (this.grid[newCoordinates.y][newCoordinates.x] > 1 && !(newCoordinates.x === adventurer.coordinates.x && newCoordinates.y === adventurer.coordinates.y)) {
+                    //Check if we found a treasure, and if we actually moved to this position
                     adventurer.coordinates = newCoordinates;
                     adventurer.treasure += 1;
+
                     const treasureIndex = this.treasures.findIndex((t) => t.coordinates.x === newCoordinates.x && t.coordinates.y === newCoordinates.y);
                     if (treasureIndex !== -1) {
                         this.treasures[treasureIndex].amount -= 1;
@@ -122,7 +131,9 @@ export class MapService {
                         }
                     }
                 }
+
                 this.buildGrid();
+
                 if (verbose) {
                     console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y}`);
                     this.displayGrid()
