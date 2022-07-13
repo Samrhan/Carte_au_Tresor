@@ -2,6 +2,10 @@ import {Adventurer, Dimension, LineType, Mountain, Movement, Orientation, Treasu
 import {MapService} from "./map.service";
 
 export class MapFactory {
+    /**
+     * Creates a map from a file data
+     * @param mapData
+     */
     public static createMap(mapData: string): MapService {
         const lines = MapFactory.filterFile(mapData);
         const map = new MapService();
@@ -27,11 +31,20 @@ export class MapFactory {
         return map;
     }
 
+    /**
+     * Filters the file to remove comments and empty lines
+     * @param fileContent
+     */
     static filterFile(fileContent: string): string[] {
         return fileContent.split('\n')
             .filter(line => line.trim().length > 0 && !line.trim().startsWith('#'));
     }
 
+    /**
+     * Parses a line and returns the corresponding object
+     * @param line
+     * @returns {type: LineType, data: Mountain | Treasure | Adventurer | Dimension}
+     */
     static parseLine(line: string): { type: LineType, data: Mountain | Treasure | Adventurer | Dimension } {
         const information = line.split('-').map(info => info.trim());
         const lineType = LineType[MapFactory.getEnumKeyByValue(LineType, information[0]) as keyof typeof LineType];
@@ -92,6 +105,11 @@ export class MapFactory {
         }
     }
 
+    /**
+     * Returns the key of the enum value
+     * @param enumToCheck
+     * @param value
+     */
     static getEnumKeyByValue(enumToCheck: any, value: string): string {
         let keys = Object.keys(enumToCheck).filter((x) => enumToCheck[x] == value);
         if (keys.length == 0) {

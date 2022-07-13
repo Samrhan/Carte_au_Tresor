@@ -63,9 +63,8 @@ export class MapService {
     }
 
     /**
-     * Compute the new coordinates of the adventurer
+     * Display the grid in the console
      */
-
     displayGrid() {
         // Display the grid in the console, width and height are set in the service.
         for (let i = 0; i < this.height; i++) {
@@ -217,6 +216,9 @@ export class MapService {
         }
     }
 
+    /**
+     * Serialize the data of the map to be saved in a file with the right format.
+     */
     serialize(): string {
         let stringToWrite = ''
         stringToWrite += `C - ${this.width} - ${this.height}\n`

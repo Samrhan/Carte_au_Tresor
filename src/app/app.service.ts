@@ -11,6 +11,9 @@ export class AppService {
         this.file = fileName;
     }
 
+    /**
+     * Execute the application
+     */
     async execute() {
         const map = MapFactory.createMap(fs.readFileSync(this.file, 'utf8'));
         map.computeMovements(this.verbose);
