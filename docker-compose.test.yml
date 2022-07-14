@@ -1,0 +1,8 @@
+version: "3.8"
+
+services:
+  carte-test:
+    image: carte/carte-test
+    build:
+      context: .
+      dockerfile: test.Dockerfile

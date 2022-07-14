@@ -16,9 +16,10 @@ Chaque objet est représenté par une interface, et chaque valeur possible est r
 
 ## Exécution
 
-Il faut d'abord build le projet avec
+Il faut d'abord installer les dépendances puis build le projet avec
 ````bash
-npm run build
+yarn install
+yarn build
 ````
 Puis executer le programme
 ````bash    
@@ -38,6 +39,11 @@ jest
 ````
 Avec en option
 - `--coverage` : pour afficher les statistiques de coverage
+
+Ou de les lancer avec Docker
+```bash
+docker-compose -f docker-compose.test.yml up
+```
 
 ## Fichier d'entrée
 
