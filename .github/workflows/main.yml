@@ -1,0 +1,21 @@
+name: Tests
+
+on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - 'src/**'
+  pull_request:
+    branches: [ "master" ]
+    paths:
+      - 'App/Backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    outputs:
+      job-status: ${{ job.status }}
+    steps:
+     - uses: actions/checkout@v2
+     - name: Test
+       run: docker-compose -f docker-compose.test.yml up --abort-on-container-exit
