@@ -180,7 +180,8 @@ describe('MapService', function () {
         service.buildGrid();
         jest.spyOn(service, "buildGrid");
         service.computeMovements();
-        expect(service.buildGrid).toHaveBeenCalledTimes(4);
+        // 5 = 1 for the initialisation + 2 for the first adventurer + 2 for the second
+        expect(service.buildGrid).toHaveBeenCalledTimes(5);
     })
 
     it("should add a treasure to the adventurer if he finds one", () => {
@@ -194,11 +195,29 @@ describe('MapService', function () {
             treasure: 0
         };
         service.addAdventurer(adventurer);
-        const treasure = {coordinates: {x: 1, y: 2}, amount: 1};
+        const treasure = {coordinates: {x: 1, y: 2}, amount: 2};
         service.addTreasure(treasure);
         service.buildGrid();
         service.computeMovements();
         expect(service.adventurers[0].treasure).toBe(1);
+    })
+
+    it("should remove 1 treasure if the adventurer finds one", () => {
+        const dimension = {width: 10, height: 10};
+        service.setSize(dimension);
+        const adventurer = {
+            coordinates: {x: 1, y: 1},
+            name: 'adventurer',
+            orientation: Orientation.SOUTH,
+            movements: [Movement.ADVANCE],
+            treasure: 0
+        };
+        service.addAdventurer(adventurer);
+        const treasure = {coordinates: {x: 1, y: 2}, amount: 2};
+        service.addTreasure(treasure);
+        service.buildGrid();
+        service.computeMovements();
+        expect(service.treasures[0].amount).toBe(1);
     })
 
     it('should decrease the treasure amount if the adventurer finds a treasure', () => {
@@ -272,8 +291,6 @@ describe('MapService', function () {
         const serialized = service.serialize();
         expect(serialized).toBeTruthy();
         expect(serialized).toBe("C - 10 - 10\n" +
-            "# {M comme Montagne} - {Axe horizontal} - {Axe vertical}\n" +
-            "# {T comme Trésor} - {Axe horizontal} - {Axe vertical} - {Nb. de trésors restants}\n" +
             "# {A comme Aventurier} - {Nom de l’aventurier} - {Axe horizontal} - {Axe vertical} - {Orientation} - {Nb. trésors ramassés}\n" +
             "A - adventurer - 2 - 1 - E - 0\n"
         );

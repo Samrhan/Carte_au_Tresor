@@ -14,20 +14,19 @@ export class MapFactory {
         for (const line of parsedLines) {
             switch (line.type) {
                 case LineType.MOUNTAIN:
-                    map.addMountain(<Mountain>line.data as Mountain);
+                    map.addMountain(<Mountain>line.data);
                     break;
                 case LineType.TREASURE:
-                    map.addTreasure(<Treasure>line.data as Treasure);
+                    map.addTreasure(<Treasure>line.data);
                     break;
                 case LineType.ADVENTURER:
-                    map.addAdventurer(<Adventurer>line.data as Adventurer);
+                    map.addAdventurer(<Adventurer>line.data);
                     break;
                 case LineType.DIMENSION:
                     map.setSize(<Dimension>line.data);
                     break;
             }
         }
-        map.buildGrid();
         return map;
     }
 

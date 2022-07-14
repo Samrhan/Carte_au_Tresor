@@ -1,4 +1,4 @@
-## Exercice pratique - La carte aux trésors
+## Exercice pratique - La carte aux trésors - Carbon IT
 
 ## Rappel du sujet
 
@@ -24,11 +24,9 @@ Puis executer le programme
 ````bash    
 node dist/index.js
 ````
-En précisant le fichier d'entrée avec 
-- `--file=<fichier>` : le fichier à analyser (nécessaire)
-
-Et en Option
-- `--output=<fichier>` : le fichier de sortie (facultatif, par défaut `<input_file>-result.txt`)
+Avec en option
+- `--file=<fichier>` : le fichier à analyser (par défaut `map.txt`)
+- `--output=<fichier>` : le fichier de sortie (par défaut `<input_file>-result.txt`)
 - `--verbose` : pour afficher les étapes de l'exécution
 
 
@@ -41,7 +39,37 @@ jest
 Avec en option
 - `--coverage` : pour afficher les statistiques de coverage
 
+## Fichier d'entrée
+
+Le fichier de la carte est un fichier texte, avec des lignes de la forme
+```txt
+# {C comme Carte} - {Nb. de case en largeur} - {Nb. de case en hauteur}
+C - 3 - 4
+# {M comme Montagne} - {Axe horizontal} - {Axe vertical}
+M - 1 - 0
+M - 2 - 1
+# {T comme Trésor} - {Axe horizontal} - {Axe vertical} - {Nb. de trésors}
+T - 0 - 3 - 2
+T - 1 - 3 - 3
+# {A comme Aventurier} - {Nom de l’aventurier} - {Axe horizontal} - {Axe vertical} - {Orientation} - {Séquence de mouvement}
+A - Lara - 1 - 1 - S - AADADAGGAA
+```
+
+# Orientation
+
+- `N` : Nord
+- `S` : Sud
+- `E` : Est
+- `O` : Ouest
+
+# Séquence de mouvement
+
+- `A` : Avancer
+- `G` : Tourner à gauche (90° sur la gauche)
+- `D` : Tourner à droite (90° sur la droite)
 
 
+
+*@ 2022 Copyright: Samuel BADER*
 
 

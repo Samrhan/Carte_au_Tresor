@@ -1,5 +1,5 @@
 import {MapFactory} from "./map.factory";
-import {Adventurer, Coordinate, Dimension, LineType, Mountain, Orientation, Treasure} from "./structures";
+import {Adventurer, Dimension, LineType, Mountain, Orientation, Treasure} from "./structures";
 
 describe(MapFactory.name, () => {
 
@@ -16,8 +16,6 @@ describe(MapFactory.name, () => {
         expect(map.adventurers.length).toBe(1);
         expect(map.treasures.length).toBe(2);
         expect(map.mountains.length).toBe(2);
-        expect(map.grid.length).toBe(4);
-        expect(map.grid[0].length).toBe(3);
 
         expect(map.adventurers[0].name).toBe('Lara');
         expect(map.adventurers[0].coordinates.x).toBe(1);

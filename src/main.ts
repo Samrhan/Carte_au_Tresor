@@ -4,15 +4,16 @@ import {AppFactory} from "./app/app.factory";
 async function main() {
 
     // Getting the program arguments
-    const fileName = process.argv.find(arg => arg.startsWith('--file='))?.split('=')[1];
+    // Using yargs format for the arguments, so the order doesn't matter
+    let fileName = process.argv.find(arg => arg.startsWith('--file='))?.split('=')[1];
     const outFileName = process.argv.find(arg => arg.startsWith('--output='))?.split('=')[1];
     const verbose = process.argv.find(arg => arg.startsWith('--verbose'));
 
-    // chhh this is secret
+    // This is secret
     const hardcoreMode = process.argv.find(arg => arg.startsWith('--hardcore'));
 
     if (!fileName) {
-        throw new Error('No file specified');
+        fileName = 'map.txt';
     }
     const app = await AppFactory.create(fileName);
 
