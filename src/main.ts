@@ -13,6 +13,7 @@ async function main() {
     const hardcoreMode = process.argv.find(arg => arg.startsWith('--hardcore'));
 
     if (!fileName) {
+        // Checking if the file is passed as an environnement variable
         fileName = process.env.MAP ? process.env.MAP : 'map.txt';
     }
     const app = await AppFactory.create(fileName);
