@@ -4,5 +4,4 @@ services:
   carte-test:
     image: carte/carte-test
     build:
-      context: .
       dockerfile: test.Dockerfile
