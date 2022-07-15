@@ -300,6 +300,28 @@ describe('MapService', function () {
             expect(service.treasures.length).toBe(0);
         })
 
+        it("should not add a treasure if he his on a case where there is a treasure, but he was already here", ()=>{
+            const adventurer = {
+                coordinates: {x: 1, y: 0},
+                name: 'adventurer',
+                orientation: Orientation.SOUTH,
+                movements: [Movement.ADVANCE, Movement.ADVANCE],
+                treasure: 0
+            };
+            const mountain = {coordinates: {x: 1, y: 2}};
+            const treasure = {coordinates: {x: 1, y: 1}, amount: 3};
+
+            service.addAdventurer(adventurer);
+            service.addTreasure(treasure);
+            service.addMountain(mountain);
+            service.buildGrid();
+            service.computeMovements();
+
+            expect(adventurer.treasure).toBe(1);
+            expect(treasure.amount).toBe(2);
+            expect(adventurer.coordinates.y).toBe(1);
+        })
+
         it('should compute the right coordinates', () => {
             let newCoordinate = (MapService as any).computeNewCoordinates({x: 1, y: 1}, Orientation.EAST);
             expect(newCoordinate).toEqual({x: 2, y: 1});
