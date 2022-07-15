@@ -16,28 +16,31 @@ export class MapService {
         this.height = dimension.height;
     }
 
-    addMountain(data: Mountain) {
-        if (!this.checkCoordinates(data.coordinates)) {
-            throw new Error('Invalid mountain coordinates: ' + data.coordinates.x + ',' + data.coordinates.y);
+    addMountain(mountain: Mountain) {
+        if (!this.checkCoordinates(mountain.coordinates)) {
+            throw new Error('Invalid mountain coordinates: ' + mountain.coordinates.x + ',' + mountain.coordinates.y);
         }
-        this.mountains.push(data);
+        this.mountains.push(mountain);
     }
 
-    addTreasure(data: Treasure) {
-        if (!this.checkCoordinates(data.coordinates)) {
-            throw new Error('Invalid treasure coordinates: ' + data.coordinates.x + ',' + data.coordinates.y);
+    addTreasure(treasure: Treasure) {
+        if (!this.checkCoordinates(treasure.coordinates)) {
+            throw new Error('Invalid treasure coordinates: ' + treasure.coordinates.x + ',' + treasure.coordinates.y);
         }
-        this.treasures.push(data);
+        this.treasures.push(treasure);
     }
 
-    addAdventurer(data: Adventurer) {
-        if (!this.checkCoordinates(data.coordinates)) {
-            throw new Error('Invalid adventurer coordinates: ' + data.coordinates.x + ',' + data.coordinates.y);
+    addAdventurer(adventurer: Adventurer) {
+        if (!this.checkCoordinates(adventurer.coordinates)) {
+            throw new Error('Invalid adventurer coordinates: ' + adventurer.coordinates.x + ',' + adventurer.coordinates.y);
         }
-        this.adventurers.push(data);
+        this.adventurers.push(adventurer);
     }
 
-    // Check if the coordinates are in the map
+    /**
+     * Check if the coordinates are valid.
+     * @param coordinates
+     */
     checkCoordinates(coordinates: Coordinate): boolean {
         return coordinates.x >= 0 && coordinates.x < this.width && coordinates.y >= 0 && coordinates.y < this.height;
     }
@@ -54,9 +57,9 @@ export class MapService {
     /**
      * build the grid with mountains, treasures and adventurers
      * The grid will help us to know if we can move to a certain position, and if there is treasure.
+     * If the value is -2, it means that there is an adventurer.
      * If the value is -1, it means that there is a mountain.
      * If the value is 0, it means that there is no mountain nor treasure.
-     * If the value is 1, it means that there is an adventurer.
      * If the value is > 1, it means that there is treasure.
      */
     buildGrid() {
@@ -67,12 +70,11 @@ export class MapService {
         }
 
         for (const treasure of this.treasures) {
-            // We add one to the value because the value 1 is reserved for the adventurer.
-            this.grid[treasure.coordinates.y][treasure.coordinates.x] = treasure.amount + 1;
+            this.grid[treasure.coordinates.y][treasure.coordinates.x] = treasure.amount;
         }
 
         for (const adventurer of this.adventurers) {
-            this.grid[adventurer.coordinates.y][adventurer.coordinates.x] = 1;
+            this.grid[adventurer.coordinates.y][adventurer.coordinates.x] = -2;
         }
     }
 
@@ -85,30 +87,28 @@ export class MapService {
             for (let j = 0; j < this.width; j++) {
                 const value = this.grid[i][j];
                 switch (value) {
-                    case -1:
-                        line += 'M\t';
-                        break;
-                    case 0:
-                        line += '.\t';
-                        break;
-                    case 1:
+                    case -2:
                         let adventurerName = this.adventurers.find(adventurer => adventurer.coordinates.x === j && adventurer.coordinates.y === i)?.name;
 
                         // Just in case the adventurer name is too long, we truncate it, in order to fit in the console.
-                        if(adventurerName && adventurerName.length > 4) {
+                        if (adventurerName && adventurerName.length > 4) {
                             adventurerName = adventurerName.substring(0, 3) + '…';
                         }
                         line += `A(${adventurerName})\t`;
                         break;
-                    default:
-                        // We added 1 to the value because the value 1 is reserved for the adventurer. So we need to subtract 1 to get the real value.
-                        const amount = value - 1;
 
-                        // Just in case the value is too long, we truncate it, in order to fit in the console.
-                        if(amount.toString().length > 4) {
-                            line += `T(${amount.toString().substring(0, 3)}…)\t`;
-                        }
-                        else {
+                    case -1:
+                        line += 'M\t';
+                        break;
+
+                    case 0:
+                        line += '.\t';
+                        break;
+
+                    default:
+                        if (value.toString().length > 4) {
+                            line += `T(${value.toString().substring(0, 3)}…)\t`;
+                        } else {
                             line += `T(${value})\t`;
                         }
                 }
@@ -133,8 +133,8 @@ export class MapService {
             for (const adventurer of this.adventurers) {
                 const movement = adventurer.movements[i];
                 if (!movement) {
-                    // Could happen if there's one adventurer with less movements than the others.
-                    break;
+                    // Could happen if there's one adventurer with fewer movements than the others.
+                    continue;
                 }
                 if (movement === Movement.TURN_RIGHT || movement === Movement.TURN_LEFT) {
                     adventurer.orientation = MapService.computeNewOrientation(adventurer.orientation, movement);
@@ -142,7 +142,7 @@ export class MapService {
                     if (verbose) {
                         console.log(`${adventurer.name} turns ${movement === Movement.TURN_RIGHT ? 'right' : 'left'} and is now facing ${adventurer.orientation}`);
                     }
-                    break;
+                    continue;
                 }
 
                 const newCoordinates = MapService.computeNewCoordinates(adventurer.coordinates, adventurer.orientation);
@@ -158,7 +158,7 @@ export class MapService {
                     } else if (verbose) {
                         console.log(`${adventurer.name} tried to cross the border but, overcome with fear, turned back.`);
                     }
-                    break;
+                    continue;
                 }
 
                 if (this.grid[newCoordinates.y][newCoordinates.x] === 0) {
@@ -166,7 +166,7 @@ export class MapService {
                     if (verbose) {
                         console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y}`);
                     }
-                } else if (this.grid[newCoordinates.y][newCoordinates.x] > 1 && !(newCoordinates.x === adventurer.coordinates.x && newCoordinates.y === adventurer.coordinates.y)) {
+                } else if (this.grid[newCoordinates.y][newCoordinates.x] > 0 && !(newCoordinates.x === adventurer.coordinates.x && newCoordinates.y === adventurer.coordinates.y)) {
                     // Check if we found a treasure, and if we actually moved to this position
                     adventurer.coordinates = newCoordinates;
                     adventurer.treasure += 1;
@@ -179,18 +179,25 @@ export class MapService {
                         }
                     }
                     if (verbose) {
-                        console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y} and found a treasure!`);
+                        console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y} and found a treasure! Carrying ${adventurer.treasure} treasure${adventurer.treasure > 1 ? 's' : ''}.`);
                     }
                 } else {
                     if (verbose) {
                         console.log(`${adventurer.name} couldn't move this time, there was ${this.grid[newCoordinates.y][newCoordinates.x] === -1 ? 'a mountain' : 'an adventurer'} blocking the way`);
                     }
+                    continue;
                 }
                 this.buildGrid();
                 if (verbose) {
                     this.displayGrid()
                 }
 
+            }
+        }
+
+        for(const adventurer of this.adventurers) {
+            if(verbose){
+                console.log(`${adventurer.name} ended at (${adventurer.coordinates.x}, ${adventurer.coordinates.y}) with ${adventurer.treasure} treasure${adventurer.treasure > 1 ? 's' : ''}.`);
             }
         }
     }

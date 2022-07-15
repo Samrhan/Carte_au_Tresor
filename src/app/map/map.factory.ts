@@ -67,7 +67,7 @@ export class MapFactory {
                 x = parseInt(information[1]);
                 y = parseInt(information[2]);
                 amount = parseInt(information[3]);
-                if (isNaN(x) || isNaN(y) || isNaN(amount)) {
+                if (isNaN(x) || isNaN(y) || isNaN(amount) || amount < 1) {
                     throw new Error('Invalid treasure coordinates or amount: ' + line);
                 }
                 return {

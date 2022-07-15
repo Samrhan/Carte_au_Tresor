@@ -107,7 +107,7 @@ describe('MapService', function () {
             const treasure = {coordinates: {x: 1, y: 1}, amount: 1};
             service.addTreasure(treasure);
             service.buildGrid();
-            expect(service.grid[1][1]).toBe(2);
+            expect(service.grid[1][1]).toBe(1);
         })
 
         it("should add adventurer to the grid correctly", () => {
@@ -122,7 +122,7 @@ describe('MapService', function () {
             };
             service.addAdventurer(adventurer);
             service.buildGrid();
-            expect(service.grid[1][1]).toBe(1);
+            expect(service.grid[1][1]).toBe(-2);
         })
 
         it("should reset the grid", () => {
@@ -446,7 +446,7 @@ describe('MapService', function () {
 
     });
 
-    it("should display the step if verbose is true", () => {
+    it("should display the step and the end if verbose is true", () => {
         const dimension = {width: 10, height: 10};
         service.setSize(dimension);
         const adventurer = {
@@ -462,7 +462,7 @@ describe('MapService', function () {
         service.buildGrid();
         jest.spyOn(console, "log");
         service.computeMovements(true);
-        expect(console.log).toHaveBeenCalledTimes(12);
+        expect(console.log).toHaveBeenCalledTimes(13);
     })
 
     it('should serialize the map', () => {
