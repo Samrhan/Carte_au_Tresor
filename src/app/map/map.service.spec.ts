@@ -151,8 +151,8 @@ describe('MapService', function () {
             };
             service.addAdventurer(adventurer);
             service.computeMovements();
-            expect(service.adventurers[0].coordinates).toEqual({x: 2, y: 1});
-            expect(service.adventurers[0].orientation).toBe(Orientation.EAST);
+            expect(adventurer.coordinates).toEqual({x: 2, y: 1});
+            expect(adventurer.orientation).toBe(Orientation.EAST);
         })
 
         it("should not call computeNewCoordinates if the movement is not ADVANCE", () => {
@@ -243,7 +243,7 @@ describe('MapService', function () {
             service.addTreasure(treasure);
             service.buildGrid();
             service.computeMovements();
-            expect(service.adventurers[0].treasure).toBe(1);
+            expect(adventurer.treasure).toBe(1);
         })
 
         it("should remove 1 treasure if the adventurer finds one", () => {
@@ -261,7 +261,7 @@ describe('MapService', function () {
             service.addTreasure(treasure);
             service.buildGrid();
             service.computeMovements();
-            expect(service.treasures[0].amount).toBe(1);
+            expect(treasure.amount).toBe(1);
         })
 
         it('should decrease the treasure amount if the adventurer finds a treasure', () => {
@@ -279,7 +279,7 @@ describe('MapService', function () {
             service.addTreasure(treasure);
             service.buildGrid();
             service.computeMovements();
-            expect(service.treasures[0].amount).toBe(1);
+            expect(treasure.amount).toBe(1);
         })
 
         it("should remove the treasure from the list if there is no more treasure", () => {
@@ -311,9 +311,69 @@ describe('MapService', function () {
             expect(newCoordinate).toEqual({x: 1, y: 0});
         })
 
+        it("should not move the adventurer if he try to cross a mountain", () => {
+            const adventurer = {
+                coordinates: {x: 1, y: 1},
+                name: 'adventurer',
+                orientation: Orientation.SOUTH,
+                movements: [Movement.ADVANCE],
+                treasure: 0
+            };
+            const mountain = {coordinates: {x: 1, y: 2}};
+            service.addAdventurer(adventurer);
+            service.addMountain(mountain);
+            service.buildGrid();
+            service.computeMovements();
+            expect(adventurer.coordinates).toEqual({x: 1, y: 1});
+        })
+
+        it("should not move the adventurer if he try to go on a case where there is another adventurer", () => {
+            const adventurer = {
+                coordinates: {x: 1, y: 1},
+                name: 'adventurer',
+                orientation: Orientation.SOUTH,
+                movements: [Movement.ADVANCE],
+                treasure: 0
+            };
+            const evilAdventurer = {
+                coordinates: {x: 1, y: 2},
+                name: 'evil_adventurer',
+                orientation: Orientation.SOUTH,
+                movements: [Movement.ADVANCE],
+                treasure: 0
+            };
+            service.addAdventurer(adventurer);
+            service.addAdventurer(evilAdventurer);
+            service.buildGrid();
+            service.computeMovements();
+            expect(adventurer.coordinates).toEqual({x: 1, y: 1});
+            expect(evilAdventurer.coordinates).toEqual({x: 1, y: 3});
+        })
+
+        it("should move both adventurers if one goes on a case where there was an adventurer, but he moved first", () => {
+            const adventurer = {
+                coordinates: {x: 1, y: 1},
+                name: 'adventurer',
+                orientation: Orientation.SOUTH,
+                movements: [Movement.ADVANCE],
+                treasure: 0
+            };
+            const goodAdventurer = {
+                coordinates: {x: 1, y: 2},
+                name: 'good_adventurer',
+                orientation: Orientation.SOUTH,
+                movements: [Movement.ADVANCE],
+                treasure: 0
+            };
+            service.addAdventurer(goodAdventurer);
+            service.addAdventurer(adventurer);
+            service.buildGrid();
+            service.computeMovements();
+            expect(adventurer.coordinates).toEqual({x: 1, y: 2});
+            expect(goodAdventurer.coordinates).toEqual({x: 1, y: 3});
+        })
+
         it("should not move the adventurer if he try to cross the border", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 9, y: 9},
                 name: 'adventurer',
@@ -324,7 +384,7 @@ describe('MapService', function () {
             service.addAdventurer(adventurer);
             service.buildGrid();
             service.computeMovements();
-            expect(service.adventurers[0].coordinates).toEqual({x: 9, y: 9});
+            expect(adventurer.coordinates).toEqual({x: 9, y: 9});
         })
 
         it("should kill the adventurer if he try to cross a border while hardcore mode is activated", () => {

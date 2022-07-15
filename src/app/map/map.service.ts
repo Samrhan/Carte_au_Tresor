@@ -185,7 +185,6 @@ export class MapService {
                     if (verbose) {
                         console.log(`${adventurer.name} couldn't move this time, there was ${this.grid[newCoordinates.y][newCoordinates.x] === -1 ? 'a mountain' : 'an adventurer'} blocking the way`);
                     }
-                    break;
                 }
                 this.buildGrid();
                 if (verbose) {
