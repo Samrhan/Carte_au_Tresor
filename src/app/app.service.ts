@@ -2,25 +2,20 @@ import fs from "fs";
 import {MapFactory} from "./map/map.factory";
 
 export class AppService {
-    file: string;
     outFileName: string | undefined;
 
     verbose = false;
     hardcoreMode = false;
 
-    constructor(fileName: string) {
-        this.file = fileName;
-    }
-
     /**
      * Execute the application
      */
-    async execute() {
-        const map = MapFactory.createMap(fs.readFileSync(this.file, 'utf8'));
+    async execute(fileName: string) {
+        const map = MapFactory.createMap(fs.readFileSync(fileName, 'utf8'));
         map.computeMovements(this.verbose, this.hardcoreMode);
         const serialized = map.serialize();
         if(!this.outFileName) {
-            this.outFileName = this.file.split('.')[0] + '-result.txt';
+            this.outFileName = fileName.split('.')[0] + '-result.txt';
         }
         fs.writeFileSync(this.outFileName, serialized);
     }

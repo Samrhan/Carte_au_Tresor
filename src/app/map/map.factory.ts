@@ -13,17 +13,20 @@ export class MapFactory {
         const parsedLines = lines.map(line => MapFactory.parseLine(line));
         for (const line of parsedLines) {
             switch (line.type) {
+                case LineType.DIMENSION:
+                    map.setSize(<Dimension>line.data);
+                    break;
+
                 case LineType.MOUNTAIN:
                     map.addMountain(<Mountain>line.data);
                     break;
+
                 case LineType.TREASURE:
                     map.addTreasure(<Treasure>line.data);
                     break;
+
                 case LineType.ADVENTURER:
                     map.addAdventurer(<Adventurer>line.data);
-                    break;
-                case LineType.DIMENSION:
-                    map.setSize(<Dimension>line.data);
                     break;
             }
         }

@@ -16,7 +16,7 @@ async function main() {
         // Checking if the file is passed as an environnement variable
         fileName = process.env.MAP ? process.env.MAP : 'map.txt';
     }
-    const app = await AppFactory.create(fileName);
+    const app = await AppFactory.create();
 
     if (verbose) {
         app.setVerbose()
@@ -28,7 +28,7 @@ async function main() {
         app.setHardcoreMode()
     }
 
-    await app.execute();
+    await app.execute(fileName);
 }
 
 (async () => await main())()

@@ -4,8 +4,10 @@ export class MapService {
     mountains: Mountain[] = [];
     treasures: Treasure[] = [];
     adventurers: Adventurer[] = [];
-    width!: number;
-    height!: number;
+
+    // Default values
+    width = 0;
+    height = 0;
 
     grid: number[][] = [];
 
@@ -15,15 +17,29 @@ export class MapService {
     }
 
     addMountain(data: Mountain) {
+        if (!this.checkCoordinates(data.coordinates)) {
+            throw new Error('Invalid mountain coordinates: ' + data.coordinates.x + ',' + data.coordinates.y);
+        }
         this.mountains.push(data);
     }
 
     addTreasure(data: Treasure) {
+        if (!this.checkCoordinates(data.coordinates)) {
+            throw new Error('Invalid treasure coordinates: ' + data.coordinates.x + ',' + data.coordinates.y);
+        }
         this.treasures.push(data);
     }
 
     addAdventurer(data: Adventurer) {
+        if (!this.checkCoordinates(data.coordinates)) {
+            throw new Error('Invalid adventurer coordinates: ' + data.coordinates.x + ',' + data.coordinates.y);
+        }
         this.adventurers.push(data);
+    }
+
+    // Check if the coordinates are in the map
+    checkCoordinates(coordinates: Coordinate): boolean {
+        return coordinates.x >= 0 && coordinates.x < this.width && coordinates.y >= 0 && coordinates.y < this.height;
     }
 
     /**
@@ -31,10 +47,7 @@ export class MapService {
      */
     resetGrid() {
         for (let i = 0; i < this.height; i++) {
-            this.grid[i] = [];
-            for (let j = 0; j < this.width; j++) {
-                this.grid[i][j] = 0;
-            }
+            this.grid[i] = new Array(this.width).fill(0);
         }
     }
 
@@ -79,11 +92,25 @@ export class MapService {
                         line += '.\t';
                         break;
                     case 1:
-                        line += `A(${this.adventurers.find((a) => a.coordinates.x === j && a.coordinates.y === i)?.name})\t`;
+                        let adventurerName = this.adventurers.find(adventurer => adventurer.coordinates.x === j && adventurer.coordinates.y === i)?.name;
+
+                        // Just in case the adventurer name is too long, we truncate it, in order to fit in the console.
+                        if(adventurerName && adventurerName.length > 4) {
+                            adventurerName = adventurerName.substring(0, 3) + '…';
+                        }
+                        line += `A(${adventurerName})\t`;
                         break;
                     default:
-                        // We add 1 to the value because the value 1 is reserved for the adventurer.
-                        line += `T(${value - 1})\t`;
+                        // We added 1 to the value because the value 1 is reserved for the adventurer. So we need to subtract 1 to get the real value.
+                        const amount = value - 1;
+
+                        // Just in case the value is too long, we truncate it, in order to fit in the console.
+                        if(amount.toString().length > 4) {
+                            line += `T(${amount.toString().substring(0, 3)}…)\t`;
+                        }
+                        else {
+                            line += `T(${value})\t`;
+                        }
                 }
             }
             console.log(line);

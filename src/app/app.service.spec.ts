@@ -19,33 +19,33 @@ describe(AppService.name, () => {
     })
 
     beforeEach(() => {
-        appService = new AppService('test.txt');
+        appService = new AppService();
     });
 
     it("should create a map", async () => {
 
-        await appService.execute();
+        await appService.execute('test.txt');
         expect(MapFactory.createMap).toHaveBeenCalledWith('');
 
     })
 
     it("should compute movements", async () => {
 
-        await appService.execute();
+        await appService.execute('test.txt');
         expect(mapService.computeMovements).toHaveBeenCalled();
 
     })
 
     it("should serialize map", async () => {
 
-        await appService.execute();
+        await appService.execute('test.txt');
         expect(mapService.serialize).toHaveBeenCalledWith();
 
     })
 
     it("should write file", async () => {
 
-        await appService.execute();
+        await appService.execute('test.txt');
         expect(fs.writeFileSync).toHaveBeenCalledWith('test-result.txt', '');
 
     })

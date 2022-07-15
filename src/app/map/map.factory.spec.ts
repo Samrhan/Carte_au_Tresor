@@ -8,7 +8,7 @@ describe(MapFactory.name, () => {
         "M - 2 - 1\n" +
         "T - 0 - 3 - 2\n" +
         "T - 1 - 3 - 3\n" +
-        "A - Lara - 1 - 1 - S - AADADAGGA"
+        "A - Lara - 1 - 1 - S - AADADAGGA";
 
     it('should create a map', () => {
 
@@ -44,7 +44,7 @@ describe(MapFactory.name, () => {
             "T - 1 - 3 - 3\n" +
             "# This is a comment\n" +
             "    \n" + // This is a blank line
-            "A - Lara - 1 - 1 - S - AADADAGGA\n"
+            "A - Lara - 1 - 1 - S - AADADAGGA\n";
         const lines = MapFactory.filterFile(dirtyFile);
         expect(lines).toStrictEqual(MapFactory.filterFile(file));
     })
