@@ -3,7 +3,7 @@ import {AppFactory} from "./app.factory";
 
 describe((MapFactory.name), () => {
     it('should instantiate an app', async () => {
-        const app = await AppFactory.create();
+        const app = await AppFactory.create({});
         expect(app).toBeDefined();
     })
 })

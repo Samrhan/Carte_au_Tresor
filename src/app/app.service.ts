@@ -2,33 +2,33 @@ import fs from "fs";
 import {MapFactory} from "./map/map.factory";
 
 export class AppService {
-    outFileName: string | undefined;
-
-    verbose = false;
-    hardcoreMode = false;
+    private _outFileName: string | undefined;
+    private _verbose = false;
+    private _hardcoreMode = false;
 
     /**
      * Execute the application
      */
     async execute(fileName: string) {
         const map = MapFactory.createMap(fs.readFileSync(fileName, 'utf8'));
-        map.computeMovements(this.verbose, this.hardcoreMode);
+        map.explore(this._verbose, this._hardcoreMode);
+
         const serialized = map.serialize();
-        if(!this.outFileName) {
-            this.outFileName = fileName.split('.')[0] + '-result.txt';
+        if (!this._outFileName) {
+            this._outFileName = fileName.split('.').slice(0, -1).join('.') + '-result.txt';
         }
-        fs.writeFileSync(this.outFileName, serialized);
+        fs.writeFileSync(this._outFileName, serialized);
     }
 
-    setVerbose() {
-        this.verbose = true;
+    set verbose(value: boolean) {
+        this._verbose = value;
     }
 
-    setOutFileName(outFileName: string) {
-        this.outFileName = outFileName;
+    set outFileName(value: string) {
+        this._outFileName = value;
     }
 
-    setHardcoreMode() {
-        this.hardcoreMode = true;
+    set hardcoreMode(value: boolean) {
+        this._hardcoreMode = value;
     }
 }

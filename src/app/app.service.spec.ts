@@ -14,7 +14,7 @@ describe(AppService.name, () => {
 
         mapService = new MapService();
         jest.spyOn(MapFactory, 'createMap').mockReturnValue(mapService);
-        jest.spyOn(mapService, 'computeMovements').mockImplementation(() => {});
+        jest.spyOn(mapService, 'explore').mockImplementation(() => {});
         jest.spyOn(mapService, 'serialize').mockImplementation(() => '');
     })
 
@@ -29,7 +29,7 @@ describe(AppService.name, () => {
 
     it("should compute movements", async () => {
         await appService.execute('test.txt');
-        expect(mapService.computeMovements).toHaveBeenCalled();
+        expect(mapService.explore).toHaveBeenCalled();
     })
 
     it("should serialize map", async () => {
@@ -43,18 +43,18 @@ describe(AppService.name, () => {
     })
 
     it("should set verbose to true", async () => {
-        await appService.setVerbose();
-        expect(appService.verbose).toBeTruthy();
+        appService.verbose = true;
+        expect((appService as any)._verbose).toBeTruthy();
     })
 
     it("should set out file name", async () => {
-        await appService.setOutFileName('funnyoutfilename.txt');
-        expect(appService.outFileName).toBe('funnyoutfilename.txt');
+        appService.outFileName = 'funnyoutfilename.txt';
+        expect((appService as any)._outFileName).toBe('funnyoutfilename.txt');
     })
 
     it("should set hardcore mode to true", async () => {
-        await appService.setHardcoreMode();
-        expect(appService.hardcoreMode).toBeTruthy();
+        appService.hardcoreMode = true;
+        expect((appService as any)._hardcoreMode).toBeTruthy();
     })
 
 })

@@ -150,7 +150,7 @@ describe('MapService', function () {
                 treasure: 0
             };
             service.addAdventurer(adventurer);
-            service.computeMovements();
+            service.explore();
             expect(adventurer.coordinates).toEqual({x: 2, y: 1});
             expect(adventurer.orientation).toBe(Orientation.EAST);
         })
@@ -168,7 +168,7 @@ describe('MapService', function () {
             };
             service.addAdventurer(adventurer);
             jest.spyOn((MapService as any), "computeNewCoordinates");
-            service.computeMovements();
+            service.explore();
             expect((MapService as any).computeNewCoordinates).not.toHaveBeenCalled();
         })
 
@@ -185,7 +185,7 @@ describe('MapService', function () {
             service.addAdventurer(adventurer);
             service.buildGrid();
             jest.spyOn((MapService as any), "computeNewCoordinates");
-            service.computeMovements();
+            service.explore();
             expect((MapService as any).computeNewCoordinates).toHaveBeenCalledWith({
                 x: 1,
                 y: 1
@@ -205,7 +205,7 @@ describe('MapService', function () {
             service.addAdventurer(adventurer);
             service.buildGrid();
             jest.spyOn((MapService as any), "computeNewOrientation");
-            service.computeMovements();
+            service.explore();
             expect((MapService as any).computeNewOrientation).toHaveBeenCalledWith(Orientation.NORTH, Movement.TURN_RIGHT);
         })
 
@@ -223,7 +223,7 @@ describe('MapService', function () {
             service.addAdventurer(adventurer);
             service.buildGrid();
             jest.spyOn(service, "buildGrid");
-            service.computeMovements();
+            service.explore();
             // 5 = 1 for the initialisation + 2 for the first adventurer + 2 for the second
             expect(service.buildGrid).toHaveBeenCalledTimes(5);
         })
@@ -242,7 +242,7 @@ describe('MapService', function () {
             const treasure = {coordinates: {x: 1, y: 2}, amount: 2};
             service.addTreasure(treasure);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(adventurer.treasure).toBe(1);
         })
 
@@ -260,7 +260,7 @@ describe('MapService', function () {
             const treasure = {coordinates: {x: 1, y: 2}, amount: 2};
             service.addTreasure(treasure);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(treasure.amount).toBe(1);
         })
 
@@ -278,7 +278,7 @@ describe('MapService', function () {
             const treasure = {coordinates: {x: 1, y: 2}, amount: 2};
             service.addTreasure(treasure);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(treasure.amount).toBe(1);
         })
 
@@ -296,7 +296,7 @@ describe('MapService', function () {
             const treasure = {coordinates: {x: 1, y: 2}, amount: 1};
             service.addTreasure(treasure);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(service.treasures.length).toBe(0);
         })
 
@@ -315,7 +315,7 @@ describe('MapService', function () {
             service.addTreasure(treasure);
             service.addMountain(mountain);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
 
             expect(adventurer.treasure).toBe(1);
             expect(treasure.amount).toBe(2);
@@ -345,7 +345,7 @@ describe('MapService', function () {
             service.addAdventurer(adventurer);
             service.addMountain(mountain);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(adventurer.coordinates).toEqual({x: 1, y: 1});
         })
 
@@ -367,7 +367,7 @@ describe('MapService', function () {
             service.addAdventurer(adventurer);
             service.addAdventurer(evilAdventurer);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(adventurer.coordinates).toEqual({x: 1, y: 1});
             expect(evilAdventurer.coordinates).toEqual({x: 1, y: 3});
         })
@@ -390,7 +390,7 @@ describe('MapService', function () {
             service.addAdventurer(goodAdventurer);
             service.addAdventurer(adventurer);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(adventurer.coordinates).toEqual({x: 1, y: 2});
             expect(goodAdventurer.coordinates).toEqual({x: 1, y: 3});
         })
@@ -405,7 +405,7 @@ describe('MapService', function () {
             };
             service.addAdventurer(adventurer);
             service.buildGrid();
-            service.computeMovements();
+            service.explore();
             expect(adventurer.coordinates).toEqual({x: 9, y: 9});
         })
 
@@ -421,7 +421,7 @@ describe('MapService', function () {
             };
             service.addAdventurer(adventurer);
             service.buildGrid();
-            service.computeMovements(false, true);
+            service.explore(false, true);
             expect(service.adventurers.length).toEqual(0);
         })
 
@@ -461,7 +461,7 @@ describe('MapService', function () {
         service.addTreasure(treasure);
         service.buildGrid();
         jest.spyOn(console, "log");
-        service.computeMovements(true);
+        service.explore(true);
         expect(console.log).toHaveBeenCalledTimes(13);
     })
 
@@ -477,7 +477,7 @@ describe('MapService', function () {
             treasure: 0
         };
         service.addAdventurer(adventurer);
-        service.computeMovements();
+        service.explore();
         const serialized = service.serialize();
         expect(serialized).toBeTruthy();
         expect(serialized).toBe("C - 10 - 10\n" +

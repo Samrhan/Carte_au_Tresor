@@ -123,7 +123,7 @@ export class MapService {
      * @param verbose: if true, the movement and the grid will be displayed in the console for each adventurer and step
      * @param hardcoreMode: if true, the adventurer will not be able to go out of the map and will die if he tries to.
      */
-    computeMovements(verbose: boolean = false, hardcoreMode: boolean = false) {
+    explore(verbose: boolean = false, hardcoreMode: boolean = false) {
         // Getting the max possible movements for each adventurer
         const maxMovements = Math.max(...this.adventurers.map((a) => a.movements.length));
 
@@ -166,7 +166,7 @@ export class MapService {
                     if (verbose) {
                         console.log(`${adventurer.name} moved to ${adventurer.coordinates.x},${adventurer.coordinates.y}`);
                     }
-                } else if (this.grid[newCoordinates.y][newCoordinates.x] > 0 && !(newCoordinates.x === adventurer.coordinates.x && newCoordinates.y === adventurer.coordinates.y)) {
+                } else if (this.grid[newCoordinates.y][newCoordinates.x] > 0) {
                     // Check if we found a treasure, and if we actually moved to this position
                     adventurer.coordinates = newCoordinates;
                     adventurer.treasure += 1;
@@ -195,8 +195,8 @@ export class MapService {
             }
         }
 
-        for(const adventurer of this.adventurers) {
-            if(verbose){
+        for (const adventurer of this.adventurers) {
+            if (verbose) {
                 console.log(`${adventurer.name} ended at (${adventurer.coordinates.x}, ${adventurer.coordinates.y}) with ${adventurer.treasure} treasure${adventurer.treasure > 1 ? 's' : ''}.`);
             }
         }
