@@ -96,7 +96,7 @@ describe(MapFactory.name, () => {
     })
 
     it("should return the enum key from value", () => {
-        expect(MapFactory.getEnumKeyByValue(LineType, 'M')).toBe('MOUNTAIN');
+        expect(MapFactory.getEnumKeyByValue<typeof LineType>(LineType, 'M')).toBe("MOUNTAIN");
     })
 
     it("should throw an error if a value is not in enum", () => {
@@ -115,16 +115,16 @@ describe(MapFactory.name, () => {
 
     it("should throw an error if treasure is malformed", () => {
         const line = "T - 0 - 3 - a";
-        expect(() => MapFactory.parseLine(line)).toThrowError('Invalid treasure coordinates or amount: ' + line);
+        expect(() => MapFactory.parseLine(line)).toThrowError("Invalid treasure coordinates or amount: " + line);
     })
 
     it("should throw an error if mountain is malformed", () => {
         const line = "M - a - 0";
-        expect(() => MapFactory.parseLine(line)).toThrowError('Invalid mountain coordinates: ' + line);
+        expect(() => MapFactory.parseLine(line)).toThrowError("Invalid mountain coordinates: " + line);
     })
 
     it("should throw an error if adventurer is malformed", () => {
         const line = "A - Lara - 1 - e - S - AADADAGGA";
-        expect(() => MapFactory.parseLine(line)).toThrowError('Invalid adventurer coordinates: ' + line);
+        expect(() => MapFactory.parseLine(line)).toThrowError("Invalid adventurer coordinates: " + line);
     })
 })

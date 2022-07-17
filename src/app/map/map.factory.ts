@@ -10,6 +10,7 @@ export class MapFactory {
         const lines = MapFactory.filterFile(mapData);
         const parsedLines = lines.map(MapFactory.parseLine);
 
+        // First we retrieve the map dimensions
         const dimensionIndex = parsedLines.findIndex(line => line.type == LineType.DIMENSION);
         if (dimensionIndex === -1) {
             throw new Error('Missing map dimension');
@@ -18,8 +19,8 @@ export class MapFactory {
         const dimension = <Dimension>parsedLines[dimensionIndex].data;
         parsedLines.splice(dimensionIndex, 1);
 
+        // Then we create the map with the others lines
         const map = new MapService(dimension);
-
         for (const line of parsedLines) {
             switch (line.type) {
                 case LineType.MOUNTAIN:
@@ -54,8 +55,9 @@ export class MapFactory {
      */
     static parseLine(line: string): { type: LineType, data: Mountain | Treasure | Adventurer | Dimension } {
         const information = line.split('-').map(info => info.trim());
-        const lineType = LineType[MapFactory.getEnumKeyByValue(LineType, information[0]) as keyof typeof LineType];
-        let x, y, amount, width, height;
+        const lineType = LineType[MapFactory.getEnumKeyByValue<typeof LineType>(LineType, information[0])];
+
+        let x, y;
         switch (lineType) {
             case LineType.MOUNTAIN:
                 x = parseInt(information[1]);
@@ -68,10 +70,11 @@ export class MapFactory {
                     type: lineType,
                     data: {coordinates: {x, y},}
                 }
+
             case LineType.TREASURE:
                 x = parseInt(information[1]);
                 y = parseInt(information[2]);
-                amount = parseInt(information[3]);
+                const amount = parseInt(information[3]);
                 if (isNaN(x) || isNaN(y) || isNaN(amount) || amount < 1) {
                     throw new Error('Invalid treasure coordinates or amount: ' + line);
                 }
@@ -82,10 +85,11 @@ export class MapFactory {
                         amount,
                     }
                 }
+
             case LineType.ADVENTURER:
                 x = parseInt(information[2]);
                 y = parseInt(information[3]);
-                if (isNaN(x) || isNaN(y)) {
+                if (isNaN(x) || isNaN(y) || x < 0 || y < 0) {
                     throw new Error('Invalid adventurer coordinates: ' + line);
                 }
                 return {
@@ -93,21 +97,21 @@ export class MapFactory {
                     data: {
                         coordinates: {x: Number(information[2]), y: Number(information[3])},
                         name: information[1],
-                        orientation: Orientation[MapFactory.getEnumKeyByValue(Orientation, information[4]) as keyof typeof Orientation],
-                        movements: information[5].split('').map(movement => Movement[MapFactory.getEnumKeyByValue(Movement, movement) as keyof typeof Movement]),
+                        orientation: Orientation[MapFactory.getEnumKeyByValue<typeof Orientation>(Orientation, information[4])],
+                        movements: information[5].split('').map(movement => Movement[MapFactory.getEnumKeyByValue<typeof Movement>(Movement, movement)]),
                         treasure: 0,
                     }
                 }
+
             case LineType.DIMENSION:
-                width = parseInt(information[1]);
-                height = parseInt(information[2]);
+                const width = parseInt(information[1]);
+                const height = parseInt(information[2]);
                 if (isNaN(width) || isNaN(height)) {
                     throw new Error('Invalid dimension: ' + line);
                 }
                 return {type: lineType, data: {width, height}}
 
             default:
-                // This should never happen because we are filtering the file before
                 throw new Error('Malformed line: ' + line);
         }
     }
@@ -117,12 +121,12 @@ export class MapFactory {
      * @param enumToCheck
      * @param value
      */
-    static getEnumKeyByValue(enumToCheck: any, value: string): string {
-        let keys = Object.keys(enumToCheck).filter((x) => enumToCheck[x] == value);
-        if (keys.length == 0) {
+    static getEnumKeyByValue<T>(enumToCheck: any, value: string): keyof T {
+        let key = Object.keys(enumToCheck).find((x) => enumToCheck[x] == value);
+        if (!key) {
             throw new Error('Invalid value: ' + value);
         }
-        return keys[0];
+        return key as keyof T;
     }
 
 }

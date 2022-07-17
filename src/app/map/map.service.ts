@@ -5,9 +5,8 @@ export class MapService {
     treasures: Treasure[] = [];
     adventurers: Adventurer[] = [];
 
-    // Default values
-    width;
-    height;
+    width: number;
+    height: number;
 
     grid: number[][] = [];
 
