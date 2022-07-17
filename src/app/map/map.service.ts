@@ -6,12 +6,12 @@ export class MapService {
     adventurers: Adventurer[] = [];
 
     // Default values
-    width = 0;
-    height = 0;
+    width;
+    height;
 
     grid: number[][] = [];
 
-    setSize(dimension: Dimension) {
+    constructor(dimension: Dimension) {
         this.width = dimension.width;
         this.height = dimension.height;
     }

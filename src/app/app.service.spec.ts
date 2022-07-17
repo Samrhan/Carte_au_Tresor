@@ -12,7 +12,7 @@ describe(AppService.name, () => {
         jest.spyOn(fs, 'writeFileSync').mockImplementation(() => {
         })
 
-        mapService = new MapService();
+        mapService = new MapService({width: 10, height: 10});
         jest.spyOn(MapFactory, 'createMap').mockReturnValue(mapService);
         jest.spyOn(mapService, 'explore').mockImplementation(() => {});
         jest.spyOn(mapService, 'serialize').mockImplementation(() => '');

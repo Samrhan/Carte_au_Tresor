@@ -10,8 +10,7 @@ describe('MapService', function () {
     })
 
     beforeEach(() => {
-        service = new MapService();
-        service.setSize(dimension);
+        service = new MapService(dimension);
     });
 
     it('should create an instance of the service', () => {
@@ -20,8 +19,6 @@ describe('MapService', function () {
 
     describe("Initialization", () => {
         it('should set the size of the map', () => {
-            const dimension = {width: 15, height: 15};
-            service.setSize(dimension);
             expect(service.width).toBe(dimension.width);
             expect(service.height).toBe(dimension.height);
         })
@@ -93,8 +90,6 @@ describe('MapService', function () {
         })
 
         it("should add mountain to the grid correctly", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const mountain = {coordinates: {x: 1, y: 1}};
             service.addMountain(mountain);
             service.buildGrid();
@@ -102,8 +97,6 @@ describe('MapService', function () {
         })
 
         it("should add treasure to the grid correctly", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const treasure = {coordinates: {x: 1, y: 1}, amount: 1};
             service.addTreasure(treasure);
             service.buildGrid();
@@ -111,8 +104,6 @@ describe('MapService', function () {
         })
 
         it("should add adventurer to the grid correctly", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -126,8 +117,6 @@ describe('MapService', function () {
         })
 
         it("should reset the grid", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const mountain = {coordinates: {x: 1, y: 1}};
             service.addMountain(mountain);
             service.buildGrid();
@@ -139,8 +128,6 @@ describe('MapService', function () {
 
     describe("Map exploration", () => {
         it('should compute movements', () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             service.buildGrid();
             const adventurer = {
                 coordinates: {x: 1, y: 1},
@@ -156,8 +143,6 @@ describe('MapService', function () {
         })
 
         it("should not call computeNewCoordinates if the movement is not ADVANCE", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             service.buildGrid();
             const adventurer = {
                 coordinates: {x: 1, y: 1},
@@ -173,8 +158,6 @@ describe('MapService', function () {
         })
 
         it("should call computeNewCoordinates if the movement is ADVANCE", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -193,8 +176,6 @@ describe('MapService', function () {
         })
 
         it("should call computeNewOrientation if the movement is TURN_RIGHT or TURN_LEFT", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -210,8 +191,6 @@ describe('MapService', function () {
         })
 
         it("should build the grid for every advance movement for every adventurer", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -229,8 +208,6 @@ describe('MapService', function () {
         })
 
         it("should add a treasure to the adventurer if he finds one", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -247,8 +224,6 @@ describe('MapService', function () {
         })
 
         it("should remove 1 treasure if the adventurer finds one", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -265,8 +240,6 @@ describe('MapService', function () {
         })
 
         it('should decrease the treasure amount if the adventurer finds a treasure', () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -283,8 +256,6 @@ describe('MapService', function () {
         })
 
         it("should remove the treasure from the list if there is no more treasure", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 1, y: 1},
                 name: 'adventurer',
@@ -410,8 +381,6 @@ describe('MapService', function () {
         })
 
         it("should kill the adventurer if he try to cross a border while hardcore mode is activated", () => {
-            const dimension = {width: 10, height: 10};
-            service.setSize(dimension);
             const adventurer = {
                 coordinates: {x: 9, y: 9},
                 name: 'adventurer',
@@ -447,8 +416,6 @@ describe('MapService', function () {
     });
 
     it("should display the step and the end if verbose is true", () => {
-        const dimension = {width: 10, height: 10};
-        service.setSize(dimension);
         const adventurer = {
             coordinates: {x: 1, y: 1},
             name: 'adventurer',
@@ -466,8 +433,6 @@ describe('MapService', function () {
     })
 
     it('should serialize the map', () => {
-        const dimension = {width: 10, height: 10};
-        service.setSize(dimension);
         service.buildGrid();
         const adventurer = {
             coordinates: {x: 1, y: 1},

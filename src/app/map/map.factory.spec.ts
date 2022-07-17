@@ -36,6 +36,16 @@ describe(MapFactory.name, () => {
         expect(map.mountains[1].coordinates.y).toBe(1);
     });
 
+    it('should throw error if there is no dimension in the file', () => {
+        const map =
+            "M - 1 - 0\n" +
+            "M - 2 - 1\n" +
+            "T - 0 - 3 - 2\n" +
+            "T - 1 - 3 - 3\n" +
+            "A - Lara - 1 - 1 - S - AADADAGGA"
+        expect(() => MapFactory.createMap(map)).toThrowError('Missing map dimension');
+    })
+
     it("should filter out comment and blank lines", () => {
         const dirtyFile = "C - 3 - 4\n" +
             "M - 1 - 0\n" +

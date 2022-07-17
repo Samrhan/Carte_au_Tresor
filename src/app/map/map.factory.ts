@@ -8,15 +8,20 @@ export class MapFactory {
      */
     public static createMap(mapData: string): MapService {
         const lines = MapFactory.filterFile(mapData);
-        const map = new MapService();
+        const parsedLines = lines.map(MapFactory.parseLine);
 
-        const parsedLines = lines.map(line => MapFactory.parseLine(line));
+        const dimensionIndex = parsedLines.findIndex(line => line.type == LineType.DIMENSION);
+        if (dimensionIndex === -1) {
+            throw new Error('Missing map dimension');
+        }
+
+        const dimension = <Dimension>parsedLines[dimensionIndex].data;
+        parsedLines.splice(dimensionIndex, 1);
+
+        const map = new MapService(dimension);
+
         for (const line of parsedLines) {
             switch (line.type) {
-                case LineType.DIMENSION:
-                    map.setSize(<Dimension>line.data);
-                    break;
-
                 case LineType.MOUNTAIN:
                     map.addMountain(<Mountain>line.data);
                     break;
